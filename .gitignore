@@ -1,0 +1,12 @@
+.DS_Store
+.idea
+*.log
+tmp/
+
+out/
+.cpcache/
+.lsp/
+.shadow-cljs/
+node_modules/
+
+public/js

@@ -1,0 +1,10 @@
+{
+  "name": "hours",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Josselin Auguste <jauguste@iblop.net>",
+  "license": "MIT",
+  "devDependencies": {
+    "shadow-cljs": "^2.11.1"
+  }
+}
