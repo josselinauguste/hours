@@ -1,8 +1,14 @@
 (ns hours.calendar
   (:require [cljs-time.core :as time]))
 
-(defn weeks [_date]
-  [(time/local-date 2020 3 2) (time/local-date 2020 3 9) (time/local-date 2020 3 16) (time/local-date 2020 3 23) (time/local-date 2020 3 30)])
+(defn days-of-month [date]
+  (loop [next-date (time/first-day-of-the-month date) days []]
+    (if (> (time/month next-date) (time/month date))
+      (reverse days)
+      (recur (time/plus next-date (time/days 1)) (cons next-date days)))))
 
-(defn days_of_week [week]
-  [week])
+(defn weeks [date]
+  (filter #(= 1 (time/day-of-week %)) (days-of-month date)))
+
+(defn days-of-week [week]
+  (map #(time/plus week (time/days %)) (range 5)))

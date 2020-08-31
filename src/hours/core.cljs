@@ -7,15 +7,15 @@
     [hours.calendar :as cal]))
 
 (defn week [week]
-  [:div [:p (time-format/unparse (time-format/formatter "d/MM") (first (cal/days_of_week week)))]])
+  [:div [:p (time-format/unparse (time-format/formatter "d/MM") (first (cal/days-of-week week)))]])
 
-(defn month [for_day]
-  (into [:div] (for [w (rseq (cal/weeks for_day))] (week w))))
+(defn month [for-day]
+  (into [:div] (for [w (reverse (cal/weeks for-day))] (week w))))
 
 (defn hours-app []
   [:div
     [:h1 "Hours"]
-    (month time/today)
+    (month (time/today))
     ])
 
 (defn main! []
