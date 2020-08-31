@@ -1,7 +1,7 @@
-{:source-paths ["src"]
- :dependencies [
-                [reagent "0.10.0"]
-                [com.andrewmcveigh/cljs-time "0.5.2"]]
+{:source-paths ["src", "test"]
+ :dependencies [[reagent "0.10.0"]
+                [com.andrewmcveigh/cljs-time "0.5.2"]
+                [cider/cider-nrepl "0.25.3"]]
  :dev-http {8080 "public/"}
  :builds {:app {:target :browser
                 :output-dir "public/js"
@@ -9,4 +9,8 @@
                 :modules {:main {:init-fn hours.core/main!}}
                 :devtools {:after-load hours.core/reload!
                            :http-root "public"
-                           :http-port 8080}}}}
+                           :http-port 8080}}
+          :test {:target :node-test
+                 :output-to "out-test/node-tests.js"
+                 :ns-regexp "-test$"
+                 :autorun true}}}

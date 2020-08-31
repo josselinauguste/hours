@@ -4,6 +4,8 @@
 tmp/
 
 out/
+out-test/
+.clj-kondo/
 .cpcache/
 .lsp/
 .shadow-cljs/
