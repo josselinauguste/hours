@@ -2,15 +2,15 @@
  :dependencies [[reagent "0.10.0"]
                 [com.andrewmcveigh/cljs-time "0.5.2"]
                 [cider/cider-nrepl "0.25.3"]]
- :dev-http {8080 "public/"}
+ :dev-http {8080 "resources/public/"}
  :builds {:app {:target :browser
-                :output-dir "public/js"
+                :output-dir "resources/public/js"
                 :asset-path "/js"
                 :modules {:main {:init-fn hours.core/main!}}
                 :devtools {:after-load hours.core/reload!
-                           :http-root "public"
+                           :http-root "resources/public"
                            :http-port 8080}}
           :test {:target :node-test
-                 :output-to "out-test/node-tests.js"
+                 :output-to "out/node-tests.js"
                  :ns-regexp "-test$"
                  :autorun true}}}

@@ -11,4 +11,5 @@ out-test/
 .shadow-cljs/
 node_modules/
 
-public/js
+resources/public/js
+resources/public/css

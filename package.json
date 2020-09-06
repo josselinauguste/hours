@@ -4,11 +4,21 @@
   "main": "index.js",
   "author": "Josselin Auguste <jauguste@iblop.net>",
   "license": "MIT",
+  "scripts": {
+    "dev": "shadow-cljs watch app test",
+    "dev-css": "npx postcss resources/css/ -o resources/public/css/main.css --watch",
+    "test": "shadow-cljs watch test",
+    "build": "shadow-cljs compile app",
+    "clean": "rm -rf resources/public/**/*.js && rm -rf resources/public/**/*.css && rm -rf out && rm -rf .shadow-cljs",
+    "dist": "shadow-cljs release app && npx postcss resources/css/ -o resources/public/css/main.css"
+  },
   "devDependencies": {
+    "postcss-cli": "^7.1.1",
     "shadow-cljs": "^2.11.1"
   },
   "dependencies": {
     "react": "16.13.0",
-    "react-dom": "16.13.0"
+    "react-dom": "16.13.0",
+    "tailwindcss": "^1.7.6"
   }
 }
