@@ -6,21 +6,32 @@
     [cljs-time.format :as time-format]
     [hours.calendar :as cal]))
 
-(defn day [name]
-  [:p.inline-block.text-sm.text-center name [:br] [:input.w-4.text-center {:type "text" :value "0"}]])
+(defonce overtimes (r/atom {}))
+
+(defn day-name [day]
+  (case (time/day-of-week day)
+    0 "sun"
+    1 "mon"
+    2 "tue"
+    3 "wed"
+    4 "thu"
+    5 "fri"
+    6 "sat"))
+
+(defn day [date]
+  [:p.inline-block.text-sm.text-center (day-name date) [:br] [:input.w-4.text-center {:type "text" :value "0"}]])
 
 (defn week [week]
   [:div.mt-2
    [:p.block (time-format/unparse (time-format/formatter "d/MM") (first (cal/days-of-week week)))]
    [:div.grid.grid-cols-5
-    (day "mon")
-    (day "tue")
-    (day "wed")
-    (day "thu")
-    (day "fri")]])
+    (for [d (cal/days-of-week week)]
+      (day d))]])
 
 (defn month [for-day]
-  (into [:div.mt-4] (for [w (reverse (cal/weeks for-day))] (week w))))
+  [:div.mt-4
+   (for [w (reverse (cal/weeks for-day))]
+     (week w))])
 
 (defn hours-app []
   [:div.container.p-4.mx-auto.md:max-w-lg.text-gray-900
