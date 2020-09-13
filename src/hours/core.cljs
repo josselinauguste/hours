@@ -19,19 +19,24 @@
     6 "sat"))
 
 (defn day [date]
-  [:p.inline-block.text-sm.text-center (day-name date) [:br] [:input.w-4.text-center {:type "text" :value "0"}]])
+  [:p.inline-block.text-sm.text-center
+   (day-name date)
+   [:br]
+   [:input.w-4.text-center {:on-change #(swap! overtimes assoc date (.. % -target -value))
+                            :type "text"
+                            :value (or (@overtimes date) "0")}]])
 
 (defn week [week]
   [:div.mt-2
    [:p.block (time-format/unparse (time-format/formatter "d/MM") (first (cal/days-of-week week)))]
    [:div.grid.grid-cols-5
     (for [d (cal/days-of-week week)]
-      (day d))]])
+      ^{:key d} [day d])]])
 
 (defn month [for-day]
   [:div.mt-4
    (for [w (reverse (cal/weeks for-day))]
-     (week w))])
+     ^{:key w} [week w])])
 
 (defn hours-app []
   [:div.container.p-4.mx-auto.md:max-w-lg.text-gray-900
