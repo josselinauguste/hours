@@ -2,11 +2,29 @@
   (:require
     [reagent.core :as r]
     [reagent.dom :as rdom]
+    [re-frame.core :as rf]
     [cljs-time.core :as time]
     [cljs-time.format :as time-format]
     [hours.calendar :as cal]))
 
-(defonce overtimes (r/atom {}))
+(defn dispatch-overtime-change-event
+  [date value]
+  (rf/dispatch [:overtime-change date value]))
+
+(rf/reg-event-db
+ :initialize
+ (fn [_ _]
+   {}))
+
+(rf/reg-event-db
+ :overtime-change
+ (fn [db [_ date value]]
+   (assoc db date value)))
+
+(rf/reg-sub
+ :get-overtime
+ (fn [db [_ date]]
+   (or (db date) "0")))
 
 (defn day-name [day]
   (case (time/day-of-week day)
@@ -19,12 +37,13 @@
     6 "sat"))
 
 (defn day [date]
-  [:p.inline-block.text-sm.text-center
-   (day-name date)
-   [:br]
-   [:input.w-4.text-center {:on-change #(swap! overtimes assoc date (.. % -target -value))
-                            :type "text"
-                            :value (or (@overtimes date) "0")}]])
+  (let [overtime @(rf/subscribe [:get-overtime date])]
+    [:p.inline-block.text-sm.text-center
+    (day-name date)
+    [:br]
+    [:input.w-4.text-center {:on-change #(dispatch-overtime-change-event date (.. % -target -value))
+                              :type "text"
+                              :value overtime}]]))
 
 (defn week [week]
   [:div.mt-2
@@ -44,9 +63,14 @@
     (month (time/today))
     ])
 
-(defn main! []
+(defn mount-ui
+  []
   (rdom/render [hours-app] (js/document.getElementById "app")))
 
+(defn main! []
+  (rf/dispatch-sync [:initialize])
+  (mount-ui))
+
 (defn reload! []
-  (main!)
+  (mount-ui)
   (prn "Reloaded"))
