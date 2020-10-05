@@ -23,7 +23,7 @@
   (time/local-date y m d))
 
 (def default-state
-  {})
+  {:overtimes {}})
 
 (rf/reg-cofx
    :local-store
@@ -52,12 +52,12 @@
  :overtime-change
  [(rf/after persist-in-local-store)]
  (fn [cofx [_ date value]]
-   {:db (assoc (:db cofx) date value)}))
+   {:db (assoc-in (:db cofx) [:overtimes date] value)}))
 
 (rf/reg-sub
  :get-overtime
  (fn [db [_ date]]
-   (or (db date) "0")))
+   (get-in db [:overtimes date] "0")))
 
 (defn day-name [day]
   (case (time/day-of-week day)
