@@ -1,25 +1,58 @@
 (ns hours.core
   (:require
-    [reagent.core :as r]
     [reagent.dom :as rdom]
     [re-frame.core :as rf]
+    [cognitect.transit :as t]
     [cljs-time.core :as time]
     [cljs-time.format :as time-format]
     [hours.calendar :as cal]))
+
+(extend-type goog.date.Date
+  IEquiv
+  (-equiv [o other]
+    (and (instance? goog.date.Date other)
+         (== (.valueOf o) (.valueOf other)))))
+
+(deftype DateHandler []
+  Object
+  (tag [this v] "date")
+  (rep [this v] #js [(time/year v) (time/month v) (time/day v)]))
+
+(defn date-reader
+  [[y m d]]
+  (time/local-date y m d))
+
+(def default-state
+  {})
+
+(rf/reg-cofx
+   :local-store
+   (fn [coeffects local-store-key]
+      (let [reader (t/reader :json {:handlers {"date" date-reader}})]
+        (assoc coeffects
+                :local-store
+                (some->> (.getItem js/localStorage local-store-key) (t/read reader))))))
+
+(defn persist-in-local-store
+ [db]
+ (let [writer (t/writer :json {:handlers {goog.date.Date (DateHandler.)}})]
+   (.setItem js/localStorage "state" (t/write writer db))))
 
 (defn dispatch-overtime-change-event
   [date value]
   (rf/dispatch [:overtime-change date value]))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  :initialize
- (fn [_ _]
-   {}))
+ [(rf/inject-cofx :local-store "state")]
+ (fn [cofx _]
+   {:db (or (:local-store cofx) default-state)}))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  :overtime-change
- (fn [db [_ date value]]
-   (assoc db date value)))
+ [(rf/after persist-in-local-store)]
+ (fn [cofx [_ date value]]
+   {:db (assoc (:db cofx) date value)}))
 
 (rf/reg-sub
  :get-overtime
