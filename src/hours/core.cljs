@@ -74,9 +74,10 @@
     [:p.inline-block.text-sm.text-center
     (day-name date)
     [:br]
-    [:input.w-4.text-center {:on-change #(dispatch-overtime-change-event date (.. % -target -value))
-                              :type "text"
-                              :value overtime}]]))
+    [:input.w-6.text-center {:on-change #(dispatch-overtime-change-event date (.. % -target -value))
+                             :type "text"
+                             :value overtime
+                             :maxLength 3}]]))
 
 (defn week [week]
   [:div.mt-2
