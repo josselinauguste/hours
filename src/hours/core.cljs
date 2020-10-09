@@ -1,5 +1,6 @@
 (ns hours.core
   (:require
+    [clojure.string]
     [reagent.dom :as rdom]
     [re-frame.core :as rf]
     [cognitect.transit :as t]
@@ -59,6 +60,12 @@
  (fn [db [_ date]]
    (get-in db [:overtimes date] "0")))
 
+(rf/reg-sub
+ :get-week-balance
+ (fn [db [_ week]]
+   (let [week-days (cal/days-of-week week)]
+    (apply + (map #(js/parseFloat (get-in db [:overtimes %] "0")) week-days)))))
+
 (defn day-name [day]
   (case (time/day-of-week day)
     0 "sun"
@@ -79,12 +86,20 @@
                              :value overtime
                              :maxLength 3}]]))
 
+(defn format-balance [balance]
+  (if (>= balance 0)
+    (clojure.string/join "" ["+" balance "h"])
+    (clojure.string/join "" ["-" (- 0 balance) "h"])))
+
 (defn week [week]
-  [:div.mt-2
-   [:p.block (time-format/unparse (time-format/formatter "d/MM") (first (cal/days-of-week week)))]
-   [:div.grid.grid-cols-5
-    (for [d (cal/days-of-week week)]
-      ^{:key d} [day d])]])
+  (let [week-balance @(rf/subscribe [:get-week-balance week])]
+    [:div.mt-2
+     [:div
+      [:span.inline-block.align-middle (time-format/unparse (time-format/formatter "d/MM") (first (cal/days-of-week week)))]
+      [:span.text-xs.text-gray-600.inline-block.m-3 (format-balance week-balance)]]
+     [:div.grid.grid-cols-5
+      (for [d (cal/days-of-week week)]
+        ^{:key d} [day d])]]))
 
 (defn month [for-day]
   [:div.mt-4
