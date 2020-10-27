@@ -4,7 +4,7 @@
     [cljs-time.core :as time]
     [cljs-time.format :as time-format]
     [hours.calendar]
-    [hours.time]
+    [hours.overtime]
     [hours.events]))
 
 (defn day-name [day]
@@ -34,7 +34,7 @@
     [:div.mt-2
      [:div
       [:span.inline-block.align-middle (time-format/unparse (time-format/formatter "d/MM") (first (hours.calendar/days-of-week week)))]
-      [:span.text-xs.text-gray-600.inline-block.m-3 (hours.time/format-balance week-balance)]]
+      [:span.text-xs.text-gray-600.inline-block.m-3 (hours.overtime/format-balance week-balance)]]
      [:div.grid.grid-cols-5
       (for [d (hours.calendar/days-of-week week)]
         ^{:key d} [day d])]]))
